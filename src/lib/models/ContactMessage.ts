@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
 // Define the schema without the `phone` field
 const contactMessageSchema = new mongoose.Schema({
@@ -8,7 +8,9 @@ const contactMessageSchema = new mongoose.Schema({
 });
 
 // Create or get the existing model
-const ContactMessage = mongoose.models.ContactMessage || mongoose.model('ContactMessage', contactMessageSchema);
+const ContactMessage =
+  mongoose.models.ContactMessage ||
+  mongoose.model("ContactMessage", contactMessageSchema);
 
 // Export the model
 export default ContactMessage;

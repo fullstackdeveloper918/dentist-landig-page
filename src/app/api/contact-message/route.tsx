@@ -1,18 +1,19 @@
+import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb"; // MongoDB connection
 import ContactMessage from "@/lib/models/ContactMessage"; // Importing the model
 import { sendContactEmail } from "@/lib/mailgun"; // Importing the Mailgun helper function
 
-export async function POST(req) {
-  await connectDB(); // Connect to MongoDB
-
+export async function POST(req: NextRequest) {
   try {
+    await connectDB(); // Connect to MongoDB
+
     // Receive the data from the request
     const { full_name, email, message } = await req.json();
 
     // Validation of form fields
     if (!full_name || !email || !message) {
-      return new Response(
-        JSON.stringify({ message: "All fields are required" }),
+      return NextResponse.json(
+        { success: false, message: "All fields are required" },
         { status: 400 }
       );
     }
@@ -21,21 +22,21 @@ export async function POST(req) {
     const existingMessage = await ContactMessage.findOne({ email });
 
     if (existingMessage) {
-      // If the email exists, update the message instead of rejecting
+      // If the email exists, update the message
       existingMessage.message = message;
       existingMessage.full_name = full_name;
       await existingMessage.save();
 
       // Send an email confirming the update
       const emailMessage = `Hello ${full_name},\n\nYour previous message has been updated. We have received your new message: "${message}". We'll get back to you soon.`;
-      await sendContactEmail({
-        full_name,
-        email,
-        message: emailMessage,
-      });
 
-      return new Response(
-        JSON.stringify({ message: "Message updated successfully and email sent" }),
+      await sendContactEmail({ full_name, email, message: emailMessage });
+
+      return NextResponse.json(
+        {
+          success: true,
+          message: "Message updated successfully and email sent",
+        },
         { status: 200 }
       );
     }
@@ -44,34 +45,28 @@ export async function POST(req) {
     const newContactMessage = new ContactMessage({ full_name, email, message });
     await newContactMessage.save();
 
-    // Prepare the message to send via Mailgun
+    // Prepare and send confirmation email
     const emailMessage = `Hello ${full_name},\n\nThank you for contacting us. We have received your message: "${message}". We'll get back to you soon.`;
 
-    // Send email using the new sendContactEmail function
-    const sendResult = await sendContactEmail({
-      full_name,
-      email,
-      message: emailMessage, // Send the message content in the email
-    });
+    await sendContactEmail({ full_name, email, message: emailMessage });
 
-    if (sendResult) {
-      console.log("Email sent successfully:", sendResult);
-    } else {
-      console.log("Email sending failed");
-    }
-
-    // Respond with success after email is sent
-    return new Response(
-      JSON.stringify({
+    return NextResponse.json(
+      {
+        success: true,
         message: "Message saved successfully and email sent",
         user: newContactMessage,
-      }),
-      { status: 200 }
+      },
+      { status: 201 }
     );
-  } catch (error) {
-    console.log("Error processing the request:", error);
-    return new Response(
-      JSON.stringify({ message: "Server error", error: error.message }),
+  } catch (error: unknown) {
+    console.error("Error processing request:", error);
+
+    return NextResponse.json(
+      {
+        success: false,
+        message: "Server error",
+        error: error instanceof Error ? error.message : "Unknown error",
+      },
       { status: 500 }
     );
   }

@@ -541,7 +541,7 @@ export default function WhatWeDoPage() {
                   protect patient data.
                 </p>
                 <Link
-                  href="/what-we-do/analytics-reporting"
+                  href="/what-we-do/compliance-security"
                   className="inline-flex items-center text-[#0F5AC3] hover:underline"
                 >
                   Learn more

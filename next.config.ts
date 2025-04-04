@@ -3,7 +3,7 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   output: "standalone",
   images: {
-    domains: ['randomuser.me'], // Add the domain for external images
+    domains: ["randomuser.me"], // Add the domain for external images
   },
 };
 

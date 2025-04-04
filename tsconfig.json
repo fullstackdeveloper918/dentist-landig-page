@@ -22,17 +22,17 @@
       "@/*": ["./src/*"]
     }
   },
-"include": [
-  "next-env.d.ts",
-  "**/*.ts",
-  "**/*.tsx",
-  "**/*.js", // Add this to ensure .js files are included
-  "**/*.jsx", // Add this to ensure .jsx files are included
-  ".next/types/**/*.ts",
-  "src/app/api/submit/route.js",
-  "src/lib/mongodb.js",
-  "src/lib/mailgun.js",
-  "src/app/api/sending"
-],
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    "**/*.js", // Add this to ensure .js files are included
+    "**/*.jsx", // Add this to ensure .jsx files are included
+    ".next/types/**/*.ts",
+    "src/app/api/submit/route.tsx",
+    "src/lib/mongodb.ts",
+    "src/lib/mailgun.tsx",
+    "src/app/api/sending"
+  ],
   "exclude": ["node_modules"]
 }
